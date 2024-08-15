@@ -1,0 +1,73 @@
+services:
+  wordpress:
+    build: ./
+    restart: always
+    env_file:
+      - .env
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: $DB_USER
+      WORDPRESS_DB_PASSWORD: $DB_PASSWORD
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:11
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MARIADB_USER: $DB_USER
+      MARIADB_PASSWORD: $DB_PASSWORD
+      MARIADB_DATABASE: wordpress
+      MARIADB_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - mariadb:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - mariadb
+
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      - wordpress
+    restart: always
+    env_file:
+      - .env
+    environment:
+      NGINX_HOST: $DOMAIN_NAME
+    volumes:
+      - wordpress:/var/www/html
+      - ./nginx.conf:/etc/nginx/templates/default.conf.template
+      # - letsencrypt:/etc/letsencrypt/
+      # COMMENT OUT WHEN NOT TESTING:
+      - ./fullchain.pem:/etc/letsencrypt/live/wirebird.ddnsfree.com/fullchain.pem
+      - ./privkey.pem:/etc/letsencrypt/live/wirebird.ddnsfree.com/privkey.pem
+    ports:
+      - 80:80
+      - 443:443
+
+  # certbot:
+  #   image: certbot/certbot:v2.11.0
+  #   env_file:
+  #     - .env
+  #   command: |
+  #     certonly --webroot
+  #       --webroot-path=/var/www/html
+  #       --email $CERTBOT_EMAIL
+  #       --agree-tos --no-eff-email
+  #       --staging -d $DOMAIN_NAME
+  #   volumes:
+  #     - wordpress:/var/www/html
+  #     - letsencrypt:/etc/letsencrypt/
+
+volumes:
+  wordpress:
+  mariadb:
+  # letsencrypt:
