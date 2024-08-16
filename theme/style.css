@@ -3,3 +3,7 @@ Theme Name: Custom Theme
 Author: Zoltan Kristof Kerezsi
 Version: 0.1
 */
+
+p {
+  color: red;
+}

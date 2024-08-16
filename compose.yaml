@@ -1,14 +1,14 @@
 services:
-  wordpress:
+  php-app:
     build: ./
     restart: always
     env_file:
       - .env
     environment:
-      WORDPRESS_DB_HOST: mariadb:3306
-      WORDPRESS_DB_USER: $DB_USER
-      WORDPRESS_DB_PASSWORD: $DB_PASSWORD
-      WORDPRESS_DB_NAME: wordpress
+      DB_NAME: wordpress
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+      DB_HOST: mariadb
     volumes:
       - wordpress:/var/www/html
     depends_on:
@@ -36,7 +36,7 @@ services:
   nginx:
     image: nginx:1.27-alpine
     depends_on:
-      - wordpress
+      - php-app
     restart: always
     env_file:
       - .env

@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?php echo get_stylesheet_uri() ?>" />
+
 <h1><?php bloginfo("name") ?></h1>
 
 <h1><?php bloginfo("description") ?></h1>

@@ -7,4 +7,4 @@ openssl req -newkey rsa:4096 \
     -nodes \
     -out fullchain.pem \
     -keyout privkey.pem \
-    -subj "/C=SI/ST=Ljubljana/L=Ljubljana/O=Security/OU=IT Department/CN=wirebird.ddnsfree.com"
+    -subj "/C=SI/ST=Budapest/L=Budapest/O=Security/OU=IT Department/CN=localhost"

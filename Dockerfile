@@ -1,15 +1,21 @@
-FROM wordpress:6-php8.3-fpm-alpine
+FROM composer:2.7 AS build
 
-WORKDIR /usr/src/wordpress
+WORKDIR /workdir
+COPY composer.json composer.lock ./
+RUN composer install
 
-RUN rm -rf ./wp-content/themes/*/
-RUN cp wp-config-docker.php wp-config.php
+FROM php:8.3-fpm-alpine
 
-# Disable automatic update of wordpress core
-RUN echo "define('WP_AUTO_UPDATE_CORE', false);" >> wp-config.php
+RUN docker-php-ext-install mysqli
 
-# Copy theme files
+WORKDIR /workdir
+
+# Copy dependencies installed by composer
+COPY --from=build /workdir/wordpress ./
 COPY theme ./wp-content/themes/custom-theme/
+RUN cp wp-config-sample.php wp-config.php
 
-COPY setup.sh .
-ENTRYPOINT [ "./setup.sh" ]
+RUN printf "\n# Disable automatic update of wordpress core\ndefine('WP_AUTO_UPDATE_CORE', false);\n" >> wp-config.php
+
+COPY docker-entrypoint.sh ./
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
