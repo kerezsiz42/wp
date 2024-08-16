@@ -2,7 +2,7 @@ FROM composer:2.7 AS build
 
 WORKDIR /workdir
 COPY composer.json composer.lock ./
-RUN composer install
+RUN composer install --no-dev
 
 FROM php:8.3-fpm-alpine
 
